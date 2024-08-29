@@ -17,6 +17,7 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 
 import javax.crypto.spec.SecretKeySpec;
@@ -43,8 +44,12 @@ public class SecurityConfig {
         // Xác thực người dùng bằng decoder JWT khi login
         httpSecurity.oauth2ResourceServer(
                 oauth2 ->
+                                // decode để JWT để xác thực
                         oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())
+                                // convert SCOPE -> Role
                                 .jwtAuthenticationConverter(jwtAuthenticationConverter()))
+                                // authentication
+                                .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
         );
         // vô hiệu hóa CSRF ( Cross-Site Request Forgery.) trong lúc build dự án để có thể POST, PUT, DELETE
         httpSecurity.csrf(AbstractHttpConfigurer::disable);

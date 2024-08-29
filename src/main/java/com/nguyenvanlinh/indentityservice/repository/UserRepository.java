@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-// JpaRepository< //Entity, //String>
+// JpaRepository< //Entity, //PrimaryKey type>
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
 

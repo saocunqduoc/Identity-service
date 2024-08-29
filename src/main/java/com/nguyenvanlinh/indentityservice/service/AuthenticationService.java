@@ -115,11 +115,11 @@ public class AuthenticationService {
         }
     }
 
-    // build scope từ một user
+    // build scope từ một user to get role -> claim ở payload
     private String buildScope(User user) {
         StringJoiner scopeJoiner = new StringJoiner(" ");
         if(user.getRoles() != null) {
-            user.getRoles().forEach(scopeJoiner::add);
+//            user.getRoles().forEach(scopeJoiner::add);
         }
         return scopeJoiner.toString();
     }

@@ -52,24 +52,25 @@ public class UserService {
         HashSet<String> roles = new HashSet<>();
         // add role
         roles.add(Role.USER.name());
-        user.setRoles(roles);
+//        user.setRoles(roles);
 
         return userRepository.save(user);
     }
 
+    // getInfo bằng token authenticate hiện tại -> Không cần endpoint là id user
     public UserResponse getMyInfo() {
         var context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
         context.getAuthentication();
         User user = userRepository.findByUsername(name).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-
+        log.info("In GET myInfo method");
         return userMapper.toUserResponse(user);
     }
 
     // thực hiện việc xác thực trước khi truy cập vào hàm
     @PreAuthorize("hasRole('ADMIN')")
     public List<User> getUsers() {
-        log.info("In getUsers method"); // Nếu không có ROLE ADMIN sẽ không thể truy cập Method -> không hiện log
+        log.info("In GET Users method"); // Nếu không có ROLE ADMIN sẽ không thể truy cập Method -> không hiện log
         return userRepository.findAll();
     }
     // nếu List<UserResponse> sử dụng thì stream và userMapper

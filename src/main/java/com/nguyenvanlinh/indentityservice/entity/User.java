@@ -26,11 +26,12 @@ public class User {
     LocalDate dob;
     // set make (các phần tử )value unique
     // Chat gpt {
-    @ElementCollection
-    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
-    @Column(name = "role")
+//    @ElementCollection
+//    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
+//    @Column(name = "Role")
     // }
-     Set<String> roles;
+    @ManyToMany
+     Set<Role> roles;
 
     // Generate getter/ setter để Hibernates co thể map data
 }
