@@ -4,11 +4,12 @@ import com.nguyenvanlinh.indentityservice.dto.request.ApiResponse;
 import com.nguyenvanlinh.indentityservice.dto.request.UserCreationRequest;
 import com.nguyenvanlinh.indentityservice.dto.request.UserUpdateRequest;
 import com.nguyenvanlinh.indentityservice.dto.respone.UserResponse;
+import com.nguyenvanlinh.indentityservice.entity.Role;
 import com.nguyenvanlinh.indentityservice.entity.User;
-import com.nguyenvanlinh.indentityservice.enums.Role;
 import com.nguyenvanlinh.indentityservice.exception.AppException;
 import com.nguyenvanlinh.indentityservice.exception.ErrorCode;
 import com.nguyenvanlinh.indentityservice.mapper.UserMapper;
+import com.nguyenvanlinh.indentityservice.repository.RoleRepository;
 import com.nguyenvanlinh.indentityservice.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 
 @Slf4j
@@ -34,6 +36,8 @@ import java.util.Optional;
 public class UserService {
     // ? dùng để làm gì
      UserRepository userRepository;
+
+     RoleRepository roleRepository;
 
      UserMapper userMapper;
 
@@ -48,11 +52,12 @@ public class UserService {
         // encode: mã hóa. matches: kiểm trả mật khẩu có trùng không. upgradeCoding ...
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        // set role onboard
-        HashSet<String> roles = new HashSet<>();
-        // add role
-        roles.add(Role.USER.name());
-//        user.setRoles(roles);
+//      set role onboard
+        Role userRole = roleRepository.findRoleByName("USER")
+                .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
+//      add role
+        // Sử dụng Set.of là một Set chứa Role
+        user.setRoles(Set.of(userRole));
 
         return userRepository.save(user);
     }
@@ -69,6 +74,9 @@ public class UserService {
 
     // thực hiện việc xác thực trước khi truy cập vào hàm
     @PreAuthorize("hasRole('ADMIN')")
+    // không phù hợp vì khi gọi role sẽ ưu tiên tìm role thay vì quyền
+    // => nên gọi hasAuthority thay vì hasRole vì 1 người có thể có nhiều Role
+//    @PreAuthorize("hasAuthority('APPROVE_POST')")
     public List<User> getUsers() {
         log.info("In GET Users method"); // Nếu không có ROLE ADMIN sẽ không thể truy cập Method -> không hiện log
         return userRepository.findAll();
@@ -78,8 +86,7 @@ public class UserService {
 //        return userRepository.findAll().stream()
 //                .map(userMapper::toUserResponse).toList();
 //    }
-    // thực hiện trước rồi mới xác thực ROLE
-//    @PostAuthorize("hasRole('ADMIN')")
+    // @PostAuthorize thực hiện trước rồi mới xác thực ROLE
     @PostAuthorize("returnObject.username == authentication.name")
     public UserResponse getUser(String id) {
         log.info("In getUser method"); // Sẽ truy cập Method và hiện log bất kể có ROLE hay không. Có -> return. Không -> Acces denied
@@ -89,16 +96,13 @@ public class UserService {
 
     public UserResponse updateUser(String idUser, UserUpdateRequest request) {
         User user =  userRepository.findById(idUser)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         userMapper.updateUser(user, request);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-//        cách cũ
-//        User user = getUser(idUser);
-//        user.setPassword(request.getPassword());
-//        user.setFirstName(request.getFirstName());
-//        user.setLastName(request.getLastName());
-//        user.setDob(request.getDob());
+        var roles = roleRepository.findAllById(request.getRoles());
+        user.setRoles(new HashSet<>(roles));
 
         return userMapper.toUserResponse(userRepository.save(user));
     }
