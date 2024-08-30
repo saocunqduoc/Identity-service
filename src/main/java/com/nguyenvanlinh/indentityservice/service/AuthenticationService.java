@@ -23,11 +23,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.StringJoiner;
 
 @Slf4j
@@ -116,11 +118,22 @@ public class AuthenticationService {
     }
 
     // build scope từ một user to get role -> claim ở payload
+    // update: get user -> get roles bao gồm cả permissions của roles
     private String buildScope(User user) {
-        StringJoiner scopeJoiner = new StringJoiner(" ");
-        if(user.getRoles() != null) {
-//            user.getRoles().forEach(scopeJoiner::add);
+        StringJoiner stringJoiner = new StringJoiner(" ");
+        // add roles
+        if(!CollectionUtils.isEmpty(user.getRoles())) {
+            user.getRoles().forEach(role -> {
+                stringJoiner.add("ROLE_" + role.getName());
+                // add permissions
+                if(!CollectionUtils.isEmpty(role.getPermissions())) {
+                    role.getPermissions().forEach(permission -> {
+                        stringJoiner.add(permission.getName());
+                    });
+                }
+
+            });
         }
-        return scopeJoiner.toString();
+        return stringJoiner.toString();
     }
 }

@@ -1,6 +1,7 @@
 package com.nguyenvanlinh.indentityservice.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.nguyenvanlinh.indentityservice.Validator.DobConstraint;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -27,5 +28,6 @@ public class UserCreationRequest {
      String password;
      String firstName;
      String lastName;
+    @DobConstraint(min = 18, message = "INVALID_DOB")
      LocalDate dob;
 }

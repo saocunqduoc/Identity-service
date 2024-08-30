@@ -10,6 +10,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Builder
+
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -24,7 +25,8 @@ public class User {
     String firstName;
     String lastName;
     LocalDate dob;
-    // set make (các phần tử )value unique
+    // Set là kểu lưu trữ (các phần tử )value unique
+
     // Chat gpt {
 //    @ElementCollection
 //    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))

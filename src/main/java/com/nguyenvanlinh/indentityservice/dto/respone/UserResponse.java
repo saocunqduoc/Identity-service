@@ -26,9 +26,9 @@ public class UserResponse {
      LocalDate dob;
      // set make (các phần tử )value unique
      // Chat gpt {
-     @ElementCollection
-     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
-     @Column(name = "role")
+//     @ElementCollection
+//     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
+//     @Column(name = "role")
      // }
-     Set<String> roles;
+     Set<RoleResponse> roles;
 }
