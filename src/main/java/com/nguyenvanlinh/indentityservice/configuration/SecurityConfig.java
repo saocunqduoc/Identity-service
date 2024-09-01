@@ -21,6 +21,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.crypto.spec.SecretKeySpec;
 
@@ -32,7 +33,7 @@ public class SecurityConfig {
 
     // config public endpoint
     public final String[] PUBLIC_ENDPOINTS = {
-            "/users","/auth/token","/auth/introspect","/auth/logout"
+            "/users","/auth/token","/auth/introspect","/auth/logout","/auth/refreshToken"
     };
     @Autowired
     private CustomJwtDecoder customJwtDecoder;
