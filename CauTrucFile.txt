@@ -1,0 +1,45 @@
+project-root/
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   └── com/
+│   │   │       └── nguyenvanlinh/
+│   │   │           ├── indentityservice/
+│   │   │           │   ├── configuration/
+│   │   │           │   │   ├── CustomJwtDecoder.java
+│   │   │           │   │   └── SecurityConfig.java
+│   │   │           │   ├── dto/
+│   │   │           │   │   ├── request/
+│   │   │           │   │   │   ├── AuthenticationRequest.java
+│   │   │           │   │   │   ├── IntrospectRequest.java
+│   │   │           │   │   │   └── LogoutRequest.java
+│   │   │           │   │   ├── response/
+│   │   │           │   │   │   ├── AuthenticationResponse.java
+│   │   │           │   │   │   └── IntrospectResponse.java
+│   │   │           │   ├── entity/
+│   │   │           │   │   ├── InvalidateToken.java
+│   │   │           │   │   └── User.java
+│   │   │           │   ├── exception/
+│   │   │           │   │   ├── AppException.java
+│   │   │           │   │   └── ErrorCode.java
+│   │   │           │   ├── repository/
+│   │   │           │   │   ├── InvalidateTokenRepository.java
+│   │   │           │   │   └── UserRepository.java
+│   │   │           │   ├── service/
+│   │   │           │   │   └── AuthenticationService.java
+│   │   │           │   └── filter/
+│   │   │           │       └── CustomLoggingFilter.java
+│   │   │           └── Application.java
+│   │   ├── resources/
+│   │   │   ├── application.properties
+│   │   │   └── logback-spring.xml
+│   ├── test/
+│   │   └── java/
+│   │       └── com/
+│   │           └── nguyenvanlinh/
+│   │               └── indentityservice/
+│   │                   └── service/
+│   │                       └── AuthenticationServiceTest.java
+├── .gitignore
+├── pom.xml
+└── README.md

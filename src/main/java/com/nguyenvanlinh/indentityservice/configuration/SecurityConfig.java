@@ -2,6 +2,8 @@ package com.nguyenvanlinh.indentityservice.configuration;
 
 import com.nguyenvanlinh.indentityservice.enums.Role;
 import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,19 +27,25 @@ import javax.crypto.spec.SecretKeySpec;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     // config public endpoint
-    public final String[] PUBLIC_ENDPOINTS = {"/users","/auth/token","/auth/introspect"};
+    public final String[] PUBLIC_ENDPOINTS = {
+            "/users","/auth/token","/auth/introspect","/auth/logout"
+    };
+    @Autowired
+    private CustomJwtDecoder customJwtDecoder;
 
     @Value("${jwt.signerKey}")
     private String signerKey;
+
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         // xác thực và cấp quyền cho người xem có quyền truy cập vào endpoint đó không
         httpSecurity.authorizeHttpRequests(
-                request -> request.requestMatchers(HttpMethod.POST,PUBLIC_ENDPOINTS).permitAll()
+                request -> request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
 //                        .requestMatchers(HttpMethod.GET,"/users").hasAuthority("ROLE_ADMIN") // cũ : SCOPE_ADMIN
 //                        .requestMatchers(HttpMethod.GET, "/users").hasRole(Role.ADMIN.name()) // sử dụng hasRole thay cho hasAuthority
                         .anyRequest().authenticated());
@@ -45,7 +53,7 @@ public class SecurityConfig {
         httpSecurity.oauth2ResourceServer(
                 oauth2 ->
                                 // decode để JWT để xác thực
-                        oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())
+                        oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(customJwtDecoder)
                                 // convert SCOPE -> Role
                                 .jwtAuthenticationConverter(jwtAuthenticationConverter()))
                                 // authentication
@@ -67,7 +75,7 @@ public class SecurityConfig {
     }
     // decode JWT
     @Bean
-    JwtDecoder jwtDecoder() {
+    JwtDecoder jwtDecoder() { // verify token
         SecretKeySpec secretKeySpec = new SecretKeySpec(signerKey.getBytes(), "HS512");
         return NimbusJwtDecoder.withSecretKey(secretKeySpec)
                 .macAlgorithm(MacAlgorithm.HS512)
