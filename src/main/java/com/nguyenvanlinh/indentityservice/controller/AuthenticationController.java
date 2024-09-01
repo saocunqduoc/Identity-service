@@ -3,6 +3,7 @@ package com.nguyenvanlinh.indentityservice.controller;
 import com.nguyenvanlinh.indentityservice.dto.request.ApiResponse;
 import com.nguyenvanlinh.indentityservice.dto.request.AuthenticationRequest;
 import com.nguyenvanlinh.indentityservice.dto.request.IntrospectRequest;
+import com.nguyenvanlinh.indentityservice.dto.request.LogoutRequest;
 import com.nguyenvanlinh.indentityservice.dto.respone.AuthenticationResponse;
 import com.nguyenvanlinh.indentityservice.dto.respone.IntrospectResponse;
 import com.nguyenvanlinh.indentityservice.service.AuthenticationService;
@@ -34,11 +35,19 @@ public class AuthenticationController {
     }
 
     @PostMapping("/introspect")
-    ApiResponse<IntrospectResponse> authenticate(@RequestBody IntrospectRequest request) throws ParseException, JOSEException {
+    ApiResponse<IntrospectResponse> authenticate(@RequestBody IntrospectRequest request)
+            throws ParseException, JOSEException {
         var result = authenticationService.introspect(request);
-
         return ApiResponse.<IntrospectResponse>builder()
                 .result(result)
+                .build();
+    }
+
+    @PostMapping("/logout")
+    ApiResponse<Void> logout(@RequestBody LogoutRequest request)
+            throws ParseException, JOSEException {
+        authenticationService.logOut(request);
+        return ApiResponse.<Void>builder()
                 .build();
     }
 //    nếu không sử dụng  mapstruct
