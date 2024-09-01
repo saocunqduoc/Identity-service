@@ -1,9 +1,6 @@
 package com.nguyenvanlinh.indentityservice.controller;
 
-import com.nguyenvanlinh.indentityservice.dto.request.ApiResponse;
-import com.nguyenvanlinh.indentityservice.dto.request.AuthenticationRequest;
-import com.nguyenvanlinh.indentityservice.dto.request.IntrospectRequest;
-import com.nguyenvanlinh.indentityservice.dto.request.LogoutRequest;
+import com.nguyenvanlinh.indentityservice.dto.request.*;
 import com.nguyenvanlinh.indentityservice.dto.respone.AuthenticationResponse;
 import com.nguyenvanlinh.indentityservice.dto.respone.IntrospectResponse;
 import com.nguyenvanlinh.indentityservice.service.AuthenticationService;
@@ -48,6 +45,15 @@ public class AuthenticationController {
             throws ParseException, JOSEException {
         authenticationService.logOut(request);
         return ApiResponse.<Void>builder()
+                .build();
+    }
+
+    @PostMapping("/refreshToken")
+    ApiResponse<AuthenticationResponse> refreshToken(@RequestBody RefreshTokenRequest request)
+            throws ParseException, JOSEException {
+        var result = authenticationService.refreshRequest(request);
+        return ApiResponse.<AuthenticationResponse>builder()
+                .result(result)
                 .build();
     }
 //    nếu không sử dụng  mapstruct
