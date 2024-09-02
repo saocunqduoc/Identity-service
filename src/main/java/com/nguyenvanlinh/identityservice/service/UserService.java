@@ -2,7 +2,7 @@ package com.nguyenvanlinh.identityservice.service;
 
 import com.nguyenvanlinh.identityservice.dto.request.UserCreationRequest;
 import com.nguyenvanlinh.identityservice.dto.request.UserUpdateRequest;
-import com.nguyenvanlinh.identityservice.dto.respone.UserResponse;
+import com.nguyenvanlinh.identityservice.dto.response.UserResponse;
 import com.nguyenvanlinh.identityservice.entity.Role;
 import com.nguyenvanlinh.identityservice.entity.User;
 import com.nguyenvanlinh.identityservice.exception.AppException;

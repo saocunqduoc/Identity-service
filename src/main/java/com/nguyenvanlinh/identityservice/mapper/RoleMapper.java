@@ -1,7 +1,7 @@
 package com.nguyenvanlinh.identityservice.mapper;
 
 import com.nguyenvanlinh.identityservice.dto.request.RoleRequest;
-import com.nguyenvanlinh.identityservice.dto.respone.RoleResponse;
+import com.nguyenvanlinh.identityservice.dto.response.RoleResponse;
 import com.nguyenvanlinh.identityservice.entity.Role;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

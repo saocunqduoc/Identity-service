@@ -1,8 +1,8 @@
 package com.nguyenvanlinh.identityservice.controller;
 
 import com.nguyenvanlinh.identityservice.dto.request.*;
-import com.nguyenvanlinh.identityservice.dto.respone.AuthenticationResponse;
-import com.nguyenvanlinh.identityservice.dto.respone.IntrospectResponse;
+import com.nguyenvanlinh.identityservice.dto.response.AuthenticationResponse;
+import com.nguyenvanlinh.identityservice.dto.response.IntrospectResponse;
 import com.nguyenvanlinh.identityservice.service.AuthenticationService;
 import com.nimbusds.jose.JOSEException;
 import lombok.AccessLevel;

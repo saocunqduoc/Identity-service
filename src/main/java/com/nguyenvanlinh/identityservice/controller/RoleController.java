@@ -2,7 +2,7 @@ package com.nguyenvanlinh.identityservice.controller;
 
 import com.nguyenvanlinh.identityservice.dto.request.ApiResponse;
 import com.nguyenvanlinh.identityservice.dto.request.RoleRequest;
-import com.nguyenvanlinh.identityservice.dto.respone.RoleResponse;
+import com.nguyenvanlinh.identityservice.dto.response.RoleResponse;
 import com.nguyenvanlinh.identityservice.service.RoleService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

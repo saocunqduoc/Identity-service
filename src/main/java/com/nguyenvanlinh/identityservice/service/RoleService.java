@@ -1,7 +1,7 @@
 package com.nguyenvanlinh.identityservice.service;
 
 import com.nguyenvanlinh.identityservice.dto.request.RoleRequest;
-import com.nguyenvanlinh.identityservice.dto.respone.RoleResponse;
+import com.nguyenvanlinh.identityservice.dto.response.RoleResponse;
 import com.nguyenvanlinh.identityservice.mapper.RoleMapper;
 import com.nguyenvanlinh.identityservice.repository.PermissionRepository;
 import com.nguyenvanlinh.identityservice.repository.RoleRepository;

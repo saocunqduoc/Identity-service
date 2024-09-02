@@ -1,7 +1,7 @@
 package com.nguyenvanlinh.identityservice.service;
 
 import com.nguyenvanlinh.identityservice.dto.request.PermissionRequest;
-import com.nguyenvanlinh.identityservice.dto.respone.PermissionResponse;
+import com.nguyenvanlinh.identityservice.dto.response.PermissionResponse;
 import com.nguyenvanlinh.identityservice.entity.Permission;
 import com.nguyenvanlinh.identityservice.mapper.PermissionMapper;
 import com.nguyenvanlinh.identityservice.repository.PermissionRepository;

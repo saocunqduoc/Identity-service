@@ -3,7 +3,7 @@ package com.nguyenvanlinh.identityservice.controller;
 import com.nguyenvanlinh.identityservice.dto.request.ApiResponse;
 import com.nguyenvanlinh.identityservice.dto.request.UserCreationRequest;
 import com.nguyenvanlinh.identityservice.dto.request.UserUpdateRequest;
-import com.nguyenvanlinh.identityservice.dto.respone.UserResponse;
+import com.nguyenvanlinh.identityservice.dto.response.UserResponse;
 import com.nguyenvanlinh.identityservice.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;

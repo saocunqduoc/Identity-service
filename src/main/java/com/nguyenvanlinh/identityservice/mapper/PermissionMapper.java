@@ -1,7 +1,7 @@
 package com.nguyenvanlinh.identityservice.mapper;
 
 import com.nguyenvanlinh.identityservice.dto.request.PermissionRequest;
-import com.nguyenvanlinh.identityservice.dto.respone.PermissionResponse;
+import com.nguyenvanlinh.identityservice.dto.response.PermissionResponse;
 import com.nguyenvanlinh.identityservice.entity.Permission;
 import org.mapstruct.Mapper;
 
