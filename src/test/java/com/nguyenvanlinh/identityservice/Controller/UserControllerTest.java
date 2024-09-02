@@ -104,5 +104,6 @@ public class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("message")
                         .value("Username must be at least 6 characters!")
                 );
+
     }
 }
