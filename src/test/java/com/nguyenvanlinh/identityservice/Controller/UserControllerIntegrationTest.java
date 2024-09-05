@@ -72,10 +72,6 @@ public class UserControllerIntegrationTest {
                 .name("ROLE_USER").description("User default role")
                 .build();
         roleRepository.save(role);
-        userRole = RoleResponse.builder()
-                .name("ROLE_USER").description("User default role")
-                .build();
-        userRoles = Set.of(userRole);
 
         // insert
         dob = LocalDate.of(2003, 3, 6);
@@ -94,7 +90,6 @@ public class UserControllerIntegrationTest {
                 .firstName("Linh")
                 .lastName("Nguyen Van")
                 .dob(dob)
-                .roles(userRoles)
                 .build();
     }
 

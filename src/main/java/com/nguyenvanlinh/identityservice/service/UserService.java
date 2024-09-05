@@ -16,6 +16,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -61,7 +63,8 @@ public class UserService {
         var context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
         context.getAuthentication();
-        User user = userRepository.findByUsername(name).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        User user = userRepository.findByUsername(name)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         log.info("In GET myInfo method");
         return userMapper.toUserResponse(user);
     }
@@ -83,6 +86,7 @@ public class UserService {
 //                .map(userMapper::toUserResponse).toList();
 //    }
     // @PostAuthorize thực hiện trước rồi mới xác thực ROLE
+
     @PostAuthorize("returnObject.username == authentication.name")
     public UserResponse getUser(String id) {
         log.info("In getUser method"); // Sẽ truy cập Method và hiện log bất kể có ROLE hay không. Có -> return. Không -> Acces denied
@@ -90,19 +94,26 @@ public class UserService {
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
     }
 
+//    @PreAuthorize("authentication.name == #username")
     public UserResponse updateUser(String idUser, UserUpdateRequest request) {
         User user =  userRepository.findById(idUser)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-
+        // kiểm tra xem tài khoản muốn update có giống với thông tin xác thực không
+        // mapper update
         userMapper.updateUser(user, request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        var roles = roleRepository.findAllById(request.getRoles());
+        // convert convert để get role hiện tại của user
+        Set<String> roleNames = request.getRoles().stream()
+                .map(Role::getName) // Giả sử Role dùng tên làm ID
+                .collect(Collectors.toSet());
+        // set new roles
+        var roles = roleRepository.findAllById(roleNames);
         user.setRoles(new HashSet<>(roles));
 
         return userMapper.toUserResponse(userRepository.save(user));
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteUser(String idUser) {
         userRepository.deleteById(idUser);
     }
