@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Scanner;
 
 @Slf4j
 @SpringBootTest
@@ -45,7 +46,6 @@ class IdentityServiceApplicationTests {
         log.info("passwordEncoder-2 : {}", passwordEncoder.encode(password));
 
     }
-
     @Test
     void bubbleSort() {
         int[] arr = {2,7,3,4,1,0,9,8,5,6};

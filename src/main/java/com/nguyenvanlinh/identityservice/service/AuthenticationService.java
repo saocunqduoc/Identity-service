@@ -141,7 +141,8 @@ public class AuthenticationService {
     }
 
     // refresh token
-    public AuthenticationResponse refreshRequest(RefreshTokenRequest request) throws ParseException, JOSEException {
+    public AuthenticationResponse refreshRequest(RefreshTokenRequest request)
+            throws ParseException, JOSEException {
         var signJWt = verifyToken(request.getToken(), true);
 
         var jti = signJWt.getJWTClaimsSet().getJWTID();

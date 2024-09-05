@@ -46,11 +46,10 @@ public class UserService {
         User user = userMapper.toUser(request);
         // encode: mã hóa. matches: kiểm trả mật khẩu có trùng không. upgradeCoding ...
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-
-//      set role onboard
-        Role userRole = roleRepository.findRoleByName("USER")
-                .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
-//      add role
+        // set role onboard
+        Role userRole = roleRepository.findRoleByName("ROLE_USER")
+                .orElseThrow(()-> new AppException(ErrorCode.ROLE_NOT_FOUND));
+        // add role
         // Sử dụng Set.of là một Set chứa Role
         user.setRoles(Set.of(userRole));
 

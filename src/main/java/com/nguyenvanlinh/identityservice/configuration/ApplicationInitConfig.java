@@ -1,7 +1,9 @@
 package com.nguyenvanlinh.identityservice.configuration;
 
 import com.nguyenvanlinh.identityservice.entity.User;
-import com.nguyenvanlinh.identityservice.enums.Role;
+import com.nguyenvanlinh.identityservice.entity.Role;
+import com.nguyenvanlinh.identityservice.repository.PermissionRepository;
+import com.nguyenvanlinh.identityservice.repository.RoleRepository;
 import com.nguyenvanlinh.identityservice.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +15,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.HashSet;
+import java.util.Set;
 
 @Slf4j
 @Configuration
@@ -27,17 +29,19 @@ public class ApplicationInitConfig {
     @ConditionalOnProperty(prefix = "spring",
             value = "datasource.driverClassName",
             havingValue = "com.mysql.cj.jdbc.Driver")
-    ApplicationRunner applicationRunner(UserRepository userRepository) {
+    ApplicationRunner applicationRunner(
+            UserRepository userRepository, PermissionRepository permissionRepository, RoleRepository roleRepository
+    ) {
         return args -> {
             if (userRepository.findByUsername("admin").isEmpty() ) {
-
-                var roles = new HashSet<String>();
-                roles.add(Role.ADMIN.name());
-
+                Role adminRole = Role.builder()
+                        .name("ADMIN")
+                        .name("Admin role")
+                        .build();
                 User user = User.builder()
                         .username("admin")
                         .password(passwordEncoder.encode("admin"))
-//                        .roles(roles)
+                        .roles(Set.of(adminRole))
                         .build();
 
                 userRepository.save(user);

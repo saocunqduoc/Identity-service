@@ -11,8 +11,8 @@
     <groupId>com.nguyenvanlinh</groupId>
     <artifactId>identity-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>indentity-service</name>
-    <description>indentity-service</description>
+    <name>identity-service</name>
+    <description>identity-service</description>
     <url/>
     <licenses>
         <license/>
@@ -95,8 +95,29 @@
             <version>2.2.224</version>
             <scope>test</scope>
         </dependency>
-    </dependencies>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>mysql</artifactId>
+            <scope>test</scope>
+        </dependency>
 
+    </dependencies>
+    <!-- test container -->
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.testcontainer</groupId>
+                <artifactId>testcontainers-bom</artifactId>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <build>
         <plugins>
             <plugin>

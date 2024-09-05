@@ -80,7 +80,6 @@ public class UserControllerTest {
                         .value(1000))
                 .andExpect(MockMvcResultMatchers.jsonPath("result.id")
                         .value("cf0600f538b3")
-
                 );
     }
 
