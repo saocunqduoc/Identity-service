@@ -1,12 +1,14 @@
 package com.nguyenvanlinh.identityservice.dto.request;
 
 import com.nguyenvanlinh.identityservice.Validator.DobConstraint;
+import com.nguyenvanlinh.identityservice.entity.Role;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -22,5 +24,5 @@ public class UserUpdateRequest {
      String lastName;
     @DobConstraint(min = 18, message = "INVALID_DOB")
      LocalDate dob;
-     List<String> roles;
+     Set<Role> roles;
 }

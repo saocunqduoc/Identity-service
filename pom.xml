@@ -95,6 +95,14 @@
             <version>2.2.224</version>
             <scope>test</scope>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-test -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <version>6.3.3</version>
+            <scope>test</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>junit-jupiter</artifactId>
@@ -111,8 +119,9 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.testcontainer</groupId>
+                <groupId>org.testcontainers</groupId>
                 <artifactId>testcontainers-bom</artifactId>
+                <version>1.19.8</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -156,6 +165,37 @@
                             <version>0.2.0</version>
                         </path>
                     </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+            <!-- Plugin JaCoCo -->
+            <!-- ./mvnv test jacoco:test-->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <!-- Chạy JaCoCo khi kiểm thử -->
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <!-- Tạo báo cáo sau khi chạy kiểm thử -->
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <!-- exclude dto to coverage -->
+                <configuration>
+                    <excludes>
+                        <!-- bỏ qua không cần phải test code coverage -->
+                        <exclude>com/nguyenvanlinh/identityservice/dto/**</exclude>
+                        <exclude>com/nguyenvanlinh/identityservice/entity/**</exclude>
+                        <exclude>com/nguyenvanlinh/identityservice/mapper/**</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
         </plugins>
