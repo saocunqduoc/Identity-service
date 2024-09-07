@@ -1,23 +1,21 @@
 package com.nguyenvanlinh.identityservice;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 import jakarta.xml.bind.DatatypeConverter;
-import lombok.extern.slf4j.Slf4j;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Scanner;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @SpringBootTest
 class IdentityServiceApplicationTests {
 
-    @Test
-    void contextLoads() {
-    }
     @Test
     void hash() throws NoSuchAlgorithmException {
         String password = "123456";
@@ -44,22 +42,5 @@ class IdentityServiceApplicationTests {
         // F1/7iFJ8cOQw.WkcJSWuivXCrvEjJOi -> hash (31 ký tự)
         log.info("passwordEncoder-1 : {}", passwordEncoder.encode(password));
         log.info("passwordEncoder-2 : {}", passwordEncoder.encode(password));
-
-    }
-    @Test
-    void bubbleSort() {
-        int[] arr = {2,7,3,4,1,0,9,8,5,6};
-        for (int i = 0; i < arr.length - 1; i++) {
-            for (int j = 0; j < arr.length - 1 - i; j++) {
-                if(arr[j]<arr[j+1]) {
-                    int temp = arr[j];
-                    arr[j] = arr[j+1];
-                    arr[j+1] = temp;
-                }
-            }
-        }
-        for (int num : arr) {
-            System.out.println(arr[num]);
-        }
     }
 }

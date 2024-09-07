@@ -1,5 +1,8 @@
 package com.nguyenvanlinh.identityservice.exception;
 
+import lombok.Getter;
+
+@Getter
 public class AppException extends RuntimeException {
 
     private ErrorCode errorCode;
@@ -8,10 +11,6 @@ public class AppException extends RuntimeException {
         // kế thừa exception
         super(errorCode.getMessage());
         this.errorCode = errorCode;
-    }
-
-    public ErrorCode getErrorCode() {
-        return errorCode;
     }
 
     public void setErrorCode(ErrorCode errorCode) {

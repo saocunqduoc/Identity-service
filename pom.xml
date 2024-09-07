@@ -102,10 +102,10 @@
             <version>6.3.3</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>junit-jupiter</artifactId>
+            <version>1.20.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -113,7 +113,6 @@
             <artifactId>mysql</artifactId>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
     <!-- test container -->
     <dependencyManagement>
@@ -132,11 +131,11 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>3.3.2</version>
                 <configuration>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>
-                            <antifaceId>lombok</antifaceId>
                         </exclude>
                     </excludes>
                 </configuration>
@@ -172,10 +171,10 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.12</version>
                 <executions>
                     <execution>
                         <goals>
-                            <!-- Chạy JaCoCo khi kiểm thử -->
                             <goal>prepare-agent</goal>
                         </goals>
                     </execution>
@@ -183,20 +182,49 @@
                         <id>report</id>
                         <phase>prepare-package</phase>
                         <goals>
-                            <!-- Tạo báo cáo sau khi chạy kiểm thử -->
                             <goal>report</goal>
                         </goals>
                     </execution>
                 </executions>
-                <!-- exclude dto to coverage -->
                 <configuration>
                     <excludes>
-                        <!-- bỏ qua không cần phải test code coverage -->
                         <exclude>com/nguyenvanlinh/identityservice/dto/**</exclude>
                         <exclude>com/nguyenvanlinh/identityservice/entity/**</exclude>
                         <exclude>com/nguyenvanlinh/identityservice/mapper/**</exclude>
+                        <exclude>com/nguyenvanlinh/identityservice/configuration/**</exclude>
                     </excludes>
                 </configuration>
+            </plugin>
+            <!-- Spotless - format code plugin -->
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>2.44.0.BETA2</version>
+                <configuration>
+                    <java>
+                        <removeUnusedImports/>
+                        <toggleOffOn/>
+                        <trimTrailingWhitespace/>
+                        <endWithNewline/>
+                        <indent>
+                            <tabs>true</tabs>
+                            <spacesPerTab>4</spacesPerTab>
+                        </indent>
+                        <palantirJavaFormat/>
+                        <importOrder>
+                            <!-- Specify either order or file, but not both -->
+                            <order>java,jakarta,org,com,com.diffplug,</order>
+                        </importOrder>
+                    </java>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>apply</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

@@ -1,20 +1,22 @@
 package com.nguyenvanlinh.identityservice.controller;
 
+import java.util.List;
+
+import org.springframework.web.bind.annotation.*;
+
 import com.nguyenvanlinh.identityservice.dto.request.ApiResponse;
 import com.nguyenvanlinh.identityservice.dto.request.PermissionRequest;
 import com.nguyenvanlinh.identityservice.dto.response.PermissionResponse;
 import com.nguyenvanlinh.identityservice.service.PermissionService;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping({"/permissions","/permissions/"}) // Khai báo toàn class
+@RequestMapping({"/permissions", "/permissions/"}) // Khai báo toàn class
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PermissionController {
@@ -26,6 +28,7 @@ public class PermissionController {
                 .result(permissionService.create(request))
                 .build();
     }
+
     @GetMapping
     ApiResponse<List<PermissionResponse>> getAll() {
         return ApiResponse.<List<PermissionResponse>>builder()

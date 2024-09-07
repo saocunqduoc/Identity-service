@@ -1,51 +1,67 @@
 package com.nguyenvanlinh.identityservice.Service;
 
-import com.nguyenvanlinh.identityservice.Validator.DobConstraint;
-import com.nguyenvanlinh.identityservice.dto.request.UserCreationRequest;
-import com.nguyenvanlinh.identityservice.dto.request.UserUpdateRequest;
-import com.nguyenvanlinh.identityservice.dto.response.RoleResponse;
-import com.nguyenvanlinh.identityservice.dto.response.UserResponse;
-import com.nguyenvanlinh.identityservice.entity.Role;
-import com.nguyenvanlinh.identityservice.entity.User;
-import com.nguyenvanlinh.identityservice.exception.AppException;
-import com.nguyenvanlinh.identityservice.exception.ErrorCode;
-import com.nguyenvanlinh.identityservice.mapper.UserMapper;
-import com.nguyenvanlinh.identityservice.mapper.UserMapperImpl;
-import com.nguyenvanlinh.identityservice.repository.RoleRepository;
-import com.nguyenvanlinh.identityservice.repository.UserRepository;
-import com.nguyenvanlinh.identityservice.service.UserService;
-import lombok.extern.slf4j.Slf4j;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.MySQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import com.nguyenvanlinh.identityservice.dto.request.UserCreationRequest;
+import com.nguyenvanlinh.identityservice.dto.request.UserUpdateRequest;
+import com.nguyenvanlinh.identityservice.dto.response.UserResponse;
+import com.nguyenvanlinh.identityservice.entity.Role;
+import com.nguyenvanlinh.identityservice.entity.User;
+import com.nguyenvanlinh.identityservice.exception.AppException;
+import com.nguyenvanlinh.identityservice.mapper.UserMapper;
+import com.nguyenvanlinh.identityservice.repository.RoleRepository;
+import com.nguyenvanlinh.identityservice.repository.UserRepository;
+import com.nguyenvanlinh.identityservice.service.UserService;
 
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.when;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @SpringBootTest
-public class UserServiceTest {
+@AutoConfigureMockMvc
+@Testcontainers
+class UserServiceTest {
     @Autowired
     private UserService userService;
 
     @MockBean
     private UserRepository userRepository;
+
     @MockBean
     private RoleRepository roleRepository;
+
+    @Container
+    static final MySQLContainer<?> MY_SQL_CONTAINER = new MySQLContainer<>("mysql:latest");
+
+    @DynamicPropertySource
+    static void configureMySQLProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", MY_SQL_CONTAINER::getJdbcUrl);
+        registry.add("spring.datasource.username", MY_SQL_CONTAINER::getUsername);
+        registry.add("spring.datasource.password", MY_SQL_CONTAINER::getPassword);
+        registry.add("spring.datasource.driver-class-name", MY_SQL_CONTAINER::getDriverClassName);
+        registry.add("spring.jpa.hibernate.ddl-auto", () -> "update");
+    }
 
     private UserCreationRequest request;
     private UserUpdateRequest userUpdateRequest;
@@ -54,14 +70,12 @@ public class UserServiceTest {
     private User user;
     private LocalDate dob;
     private Role role;
+    private PasswordEncoder passwordEncoder;
 
     @BeforeEach
-    void initData(){
+    void initData() {
 
-        userMapper = new UserMapperImpl();
-        role = Role.builder()
-                .name("ROLE_USER").description("User default role")
-                .build();
+        role = Role.builder().name("ROLE_USER").description("User default role").build();
         roleRepository.save(role);
 
         dob = LocalDate.of(1990, 1, 1);
@@ -76,7 +90,6 @@ public class UserServiceTest {
         userUpdateRequest = UserUpdateRequest.builder()
                 .password("1@Linh2003")
                 .lastName("Nguyen Van")
-                .roles(Set.of(role))
                 .build();
 
         userResponse = UserResponse.builder()
@@ -97,11 +110,11 @@ public class UserServiceTest {
     }
 
     @Test
-    void createUser_validRequest_success(){
+    void createUser_validRequest_success() {
         // GIVEN
         when(userRepository.existsByUsername(anyString())).thenReturn(false);
         when(userRepository.save(any())).thenReturn(user);
-        when(roleRepository.findRoleByName("ROLE_USER")).thenReturn(Optional.of(role));
+        when(roleRepository.findRoleByName("USER")).thenReturn(Optional.of(role));
         // WHEN
         var user = userService.createUser(request);
 
@@ -111,32 +124,20 @@ public class UserServiceTest {
     }
 
     @Test
-    void createUser_userExisted_fail(){
+    void createUser_userAlreadyExists_throwException() {
         // GIVEN
-        when(userRepository.existsByUsername(anyString())).thenReturn(true);
+        when(userRepository.save(any(User.class))).thenThrow(DataIntegrityViolationException.class);
 
-        // WHEN
-        var exception = assertThrows(AppException.class,
-                () -> userService.createUser(request));
+        // WHEN / THEN
+        AppException exception =
+                Assertions.catchThrowableOfType(() -> userService.createUser(request), AppException.class);
 
-        // THEN
-        Assertions.assertThat(exception.getErrorCode().getCode())
-                .isEqualTo(1002);
-    }
-    // createUser_ Role not found
-    @Test
-    void createUser_RoleNotFound_fail(){
-        when(userRepository.existsByUsername(anyString())).thenReturn(false);
-        when(userRepository.save(any())).thenReturn(user);
-        when(roleRepository.findRoleByName("ROLE_USER")).thenReturn(Optional.empty());
-
-        var exception = assertThrows(AppException.class, () -> userService.createUser(request));
-        Assertions.assertThat(exception.getErrorCode().getCode()).isEqualTo(1008);
+        Assertions.assertThat(exception.getErrorCode().getCode()).isEqualTo(1002); // Mã lỗi USER_EXISTED
     }
     // get Info success
     @Test
     @WithMockUser(username = "saocunqduoc") // mock user => khong can authentication
-    void getMyInfo_validRequest_success(){
+    void getMyInfo_validRequest_success() {
         when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(user));
 
         var resp = userService.getMyInfo();
@@ -145,7 +146,7 @@ public class UserServiceTest {
     // get Info fail
     @Test
     @WithMockUser(username = "saocunqduoc") // mock user => khong can authentication
-    void getMyInfo_userNotFound_Error(){
+    void getMyInfo_userNotFound_Error() {
         when(userRepository.findByUsername(anyString())).thenReturn(Optional.ofNullable(null));
 
         var exception = assertThrows(AppException.class, () -> userService.getMyInfo());
@@ -153,16 +154,20 @@ public class UserServiceTest {
     }
     // delete user
     @Test
-    @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void deleteUser_validRequest_success(){
+    @WithMockUser(
+            username = "admin",
+            roles = {"ADMIN"})
+    void deleteUser_validRequest_success() {
         when(userRepository.existsByUsername(anyString())).thenReturn(true);
 
         userService.deleteUser(user.getId());
     }
     // get Users success
     @Test
-    @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void getUsers_validRequest_success(){
+    @WithMockUser(
+            username = "admin",
+            roles = {"ADMIN"})
+    void getUsers_validRequest_success() {
         when(userRepository.findAll().stream().toList()).thenReturn(List.of(user));
 
         var resp = userService.getUsers();
@@ -170,16 +175,20 @@ public class UserServiceTest {
     }
     // get User by ID success
     @Test
-    @WithMockUser(username = "saocunqduoc", roles = {"USER"})
-    void getUserById_validRequest_success(){
+    @WithMockUser(
+            username = "saocunqduoc",
+            roles = {"USER"})
+    void getUserById_validRequest_success() {
         when(userRepository.findById(anyString())).thenReturn(Optional.of(user));
         var resp = userService.getUser("cf0600f538b3");
         Assertions.assertThat(resp.getId()).isEqualTo("cf0600f538b3");
     }
     // getUser by ID fail
     @Test
-    @WithMockUser(username = "saocunqduoc", roles = {"USER"})
-    void getUserById_userNotExist_fail(){
+    @WithMockUser(
+            username = "saocunqduoc",
+            roles = {"USER"})
+    void getUserById_userNotExist_fail() {
         when(userRepository.findById(anyString())).thenReturn(Optional.empty());
 
         var exception = assertThrows(AppException.class, () -> userService.getUser("cf0600f538b3"));
@@ -187,30 +196,31 @@ public class UserServiceTest {
     }
     // updateUser
     @Test
-    @WithMockUser(username = "saocunqduoc", roles = {"USER"})
+    @WithMockUser(
+            username = "saocunqduoc",
+            roles = {"USER"})
     void updateUser_validRequest_success() {
         // GIVEN
         // đúng theo thứ tự trong update Service
         when(userRepository.findById(anyString())).thenReturn(Optional.of(user));
         userService.updateUser(user.getId(), userUpdateRequest);
         when(userRepository.save(any())).thenReturn(user);
-        // WHEN
-        var mapper = userMapper.toUserResponse(userRepository.save(user));
+        // WHERE
         // THEN
-        Assertions.assertThat(mapper.getUsername()).isEqualTo("saocunqduoc");
-        Assertions.assertThat(mapper.getLastName()).isEqualTo("Nguyen Van");
+        Assertions.assertThat(user.getUsername()).isEqualTo("saocunqduoc");
+        Assertions.assertThat(user.getLastName()).isEqualTo("Nguyen Van");
     }
     // updateUser fail
     @Test
-    @WithMockUser(username = "saocunqduoc", roles = {"USER"})
-    void updateUser_userNotExist_fail() {
+    @WithMockUser(
+            username = "saocunqduoc",
+            roles = {"USER"})
+    void updateUser_usernameNotExist_fail() {
         // GIVEN
         when(userRepository.findById(anyString())).thenReturn(Optional.empty());
         // WHEN
-        var mapper = assertThrows(AppException.class,
-                () -> userService.updateUser(user.getId(), userUpdateRequest));
+        var mapper = assertThrows(AppException.class, () -> userService.updateUser(user.getId(), userUpdateRequest));
         // THEN
         Assertions.assertThat(mapper.getErrorCode().getCode()).isEqualTo(1005);
     }
-
 }

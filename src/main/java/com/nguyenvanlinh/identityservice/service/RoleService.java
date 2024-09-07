@@ -1,18 +1,21 @@
 package com.nguyenvanlinh.identityservice.service;
 
+import java.util.HashSet;
+import java.util.List;
+
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Service;
+
 import com.nguyenvanlinh.identityservice.dto.request.RoleRequest;
 import com.nguyenvanlinh.identityservice.dto.response.RoleResponse;
 import com.nguyenvanlinh.identityservice.mapper.RoleMapper;
 import com.nguyenvanlinh.identityservice.repository.PermissionRepository;
 import com.nguyenvanlinh.identityservice.repository.RoleRepository;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-
-import java.util.HashSet;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -24,8 +27,10 @@ public class RoleService {
     PermissionRepository permissionRepository;
 
     RoleMapper roleMapper;
+
     // khác với tạo permission
-    public RoleResponse create(RoleRequest request){
+    @PreAuthorize("hasRole('ADMIN')")
+    public RoleResponse create(RoleRequest request) {
         var role = roleMapper.toRole(request);
 
         var getPermissions = permissionRepository.findAllById(request.getPermissions());
@@ -35,11 +40,13 @@ public class RoleService {
         return roleMapper.toRoleResponse(role);
     }
 
-    public List<RoleResponse> getAll(){
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<RoleResponse> getAll() {
         var roles = roleRepository.findAll();
         return roles.stream().map(roleMapper::toRoleResponse).toList();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public void delete(String role) {
         roleRepository.deleteById(role);
     }

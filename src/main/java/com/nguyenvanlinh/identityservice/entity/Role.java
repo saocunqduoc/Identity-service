@@ -1,10 +1,11 @@
 package com.nguyenvanlinh.identityservice.entity;
 
+import java.util.Set;
+
 import jakarta.persistence.*;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.util.Set;
 
 @Getter
 @Setter
@@ -14,10 +15,11 @@ import java.util.Set;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 public class Role {
-        @Id
-        String name;
-        String description;
+    @Id
+    String name;
 
-        @ManyToMany
-        Set<Permission> permissions;
+    String description;
+
+    @ManyToMany
+    Set<Permission> permissions;
 }
